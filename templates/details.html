@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+<head>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
 <div class="menu-bar">
     <a href="/index/">Home</a>
     <a href="/my_account/">My Account</a>
@@ -10,4 +13,7 @@
 <p>{{ item.description }}</p>
 <img class="item-image" src="{{ item.image_url }}" alt="Item Image">
 <p>Contact: {{ item.contact_method }}</p>
+<body>
+  <a href="/submit_item_bid/" class="button">Bid on Item</a>
+</body>
 

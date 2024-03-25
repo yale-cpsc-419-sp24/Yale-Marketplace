@@ -78,6 +78,20 @@ def submit_item():
     return render_template('details.html', item=nit, item_id=len(dummy_items))
     return render_template('add_item.html')
 
+@app.route('/submit_item_bid/', methods=['GET', 'POST'])
+def submit_item_bid():
+    if(request.method=='POST'):
+        offer_price = request.form['offer_price']
+        comments = request.form['comments']
+        nit={
+            'offer_price': offer_price,
+            'comments': comments
+        }
+        print(offer_price, comments)
+        return redirect(url_for('listings'))
+    return render_template('request_transaction.html')
+
+
 @app.route('/log_in/', methods=['GET', 'POST'])
 def log_in():
     if request.method == 'POST':

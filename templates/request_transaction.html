@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bid for Item</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="menu-bar">
+    <a href="/index/">Home</a>
+    <a href="/my_account/">My Account</a>
+    <a href="/logout/">Sign out</a>
+  </div>
+
+  <div class="add-item-container">
+  <h1>Add New Item</h1>
+  <form action="/submit_item_bid/" method="post" enctype="multipart/form-data">
+    
+    <label for="offer_price">What you are willing to pay:</label><br>
+    <input type="number" id="offer_price" name="offer_price" step="0.01" required><br><br>
+
+    <label for="comments">Comments:</label><br>
+    <textarea id="comments" name="comments" ></textarea><br><br>
+
+    <input type="submit" value="Submit">
+  </form>
+  </div>
+</body>
+</html>
+
