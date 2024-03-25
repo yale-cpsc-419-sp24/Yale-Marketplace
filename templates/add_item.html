@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add New Item</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="menu-bar">
+    <a href="/index/">Home</a>
+    <a href="/my_account/">My Account</a>
+    <a href="/logout/">Sign out</a>
+  </div>
+
+  <div class="add-item-container">
+  <h1>Add New Item</h1>
+  <form action="/submit_item/" method="post" enctype="multipart/form-data">
+    <label for="name">Name:</label><br>
+    <input type="text" id="name" name="name" required><br><br>
+
+    <label for="description">Description:</label><br>
+    <textarea id="description" name="description" ></textarea><br><br>
+
+    <label for="asking_price">Asking Price:</label><br>
+    <input type="number" id="asking_price" name="asking_price" step="0.01" required><br><br>
+
+    <label for="image">Image:</label><br>
+    <input type="file" id="image" name="image" accept="image/*" ><br><br>
+
+    <label for="negotiable">Negotiable:</label><br>
+    <input type="radio" id="negotiable_yes" name="negotiable" value="yes" required>
+    <label for="negotiable_yes">Yes</label>
+    <input type="radio" id="negotiable_no" name="negotiable" value="no" required>
+    <label for="negotiable_no">No</label><br><br>
+
+    <label for="category">Category:</label><br>
+    <select id="category" name="category" multiple>
+      <option value="electronics">Electronics</option>
+      <option value="clothing">Clothing</option>
+      <option value="furniture">Furniture</option>
+    </select><br><br>
+
+    <input type="submit" value="Submit">
+  </form>
+  </div>
+</body>
+</html>
+

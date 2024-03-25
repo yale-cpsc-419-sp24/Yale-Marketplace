@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Welcome, {{ username }}</h2>
+
+    <div class="section">
+      <div class="section-title">My Posts</div>
+      <ul>
+        {% for post in user_posts %}
+        <li class="post-item">{{ post }}</li>
+        {% endfor %}
+      </ul>
+      <form action="/post/" method="GET">
+        <button class="button" type="submit">Add Item</button>
+      </form>
+    </div>
+
+    <div class="section">
+      <div class="section-title">My Transactions</div>
+      <ul>
+        {% for transaction in user_transactions %}
+        <li class="transaction-item">{{ transaction }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <form action="/logout/" method="get">
+      <button type="submit">Sign Out</button>
+    </form>
+
+    </div>
+</body>
+</html>
