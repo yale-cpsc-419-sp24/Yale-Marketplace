@@ -1,10 +1,31 @@
 from html import escape  # Escape HTML characters in the search fields to prevent XSS attacks
 from flask import Flask, redirect, render_template, request, make_response, url_for, session  # The Flask web framework
+from flask import g  # Store the database connection
+import sqlite3  # Connect to the SQLite database
+
 import json  # Parse JSON data from the API
 #import backend  # Send SQL queries to the database
 import requests  # Send HTTP requests to the image URL
+
+
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
+app.config['DATABASE'] = 'marketplace.db'
+
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(app.config['DATABASE'])
+        db.row_factory = sqlite3.Row 
+    return db
+
+@app.teardown_appcontext
+def close_connection(exception):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
+
+
 dummy_items = [
     {
         'name': 'Item 1',
@@ -35,11 +56,12 @@ dummy_items = [
 def root():
     return redirect(url_for('log_in'))
 
-
 @app.route('/index/')
 def listings():
-    print(session.get('username'))
-    return render_template('index.html', items=dummy_items)
+    db = get_db()
+    items = db.execute('SELECT * FROM item').fetchall()
+    #print(session.get('username'))
+    return render_template('index.html', items=items)
 
 
 @app.route('/logout/')
@@ -52,9 +74,15 @@ def logout():
 def my_account():
     return render_template('my_account.html', username=session.get('username'))
 
-@app.route('/item/<item_id>/')
+@app.route('/item/<int:item_id>/')
 def item_details(item_id):
-    return render_template('details.html', item=dummy_items[int(item_id)-1], item_id=item_id)
+    db = get_db()
+    item = db.execute('SELECT * FROM item WHERE item_id = ?', (item_id,)).fetchone()
+
+    if item:
+        return render_template('details.html', item=item, item_id=item_id)
+    else:
+        return "Item not found", 404
 
 @app.route('/post/')
 def add_item():
@@ -62,21 +90,27 @@ def add_item():
 
 @app.route('/submit_item/', methods=['GET', 'POST'])
 def submit_item():
-    name = request.form['name']
-    description = request.form['description']
-    asking_price = request.form['asking_price']
-    image = request.files['image']
-    negotiable = request.form['negotiable']
-    category = request.form.getlist('category')
-    nit={
-        'name': name,
-        'id': len(dummy_items),
-        'description': description,
-        'image_url': image,
-        'contact_method': asking_price
-    }
-    return render_template('details.html', item=nit, item_id=len(dummy_items))
-    return render_template('add_item.html')
+    if request.method == 'POST':
+        # Ensure a user is logged in
+        if 'user_id' not in session:
+            return redirect(url_for('log_in'))
+
+        # Retrieve form data
+        name = request.form['name']
+        description = request.form['description']
+        asking_price = request.form['asking_price']
+        negotiable = request.form.get('negotiable', '0')  # Default to '0' if not provided
+        category = request.form['category']
+        user_id = session['user_id']
+
+        db = get_db()
+        db.execute('INSERT INTO item (user_account_id, name, description, asking_price, negotiable, category_id) VALUES (?, ?, ?, ?, ?, ?)',
+                   (user_id, name, description, asking_price, negotiable, category))
+        db.commit()
+
+        return redirect(url_for('listings'))
+    else:
+        return render_template('add_item.html')
 
 @app.route('/submit_item_bid/', methods=['GET', 'POST'])
 def submit_item_bid():
@@ -96,53 +130,46 @@ def submit_item_bid():
 def log_in():
     if request.method == 'POST':
         username = request.form['username']
-        password = request.form['password']
-        #here we can store an id for a user. later we will replace this with cas login but still use usernames in the database
-        print("in log in")
-        session['username'] = username
-        return redirect(url_for('listings', username=username))
+
+        db = get_db()
+        cursor = db.execute('SELECT user_account_id, name FROM user WHERE name = ?', (username,))
+        user = cursor.fetchone()
+
+        if user:
+            # User found, proceed with login
+            session['username'] = username
+            session['user_id'] = user['user_account_id']  # Store the user's ID in the session
+            return redirect(url_for('listings'))
+        else:
+            # No user found with the given username
+            return render_template('log_in.html', error="Account not found. Please sign up.")
     else:
         return render_template('log_in.html')
 
+    
 @app.route('/sign_up/', methods=['GET', 'POST'])
 def sign_up():
     if request.method == 'POST':
         username = request.form['username']
-        password = request.form['password']
-        #here we can store an id for a user. later we will replace this with cas login but still use usernames in the database
-        session['username'] = username
-        print("creating account with username: ", username)
-        return redirect(url_for('listings', username=username))
+        
+        db = get_db()
+        try:
+            # Inserting the new user into the database
+            cursor = db.execute('INSERT INTO user (name, email_address) VALUES (?, ?)', (username, username + "@example.com"))
+            db.commit()
+            
+            # Fetch the user_account_id of the newly created user
+            user_account_id = cursor.lastrowid
+            
+            # Store both username and user_account_id in the session
+            session['username'] = username
+            session['user_id'] = user_account_id  # Store the user's ID in the session
+            
+            print("Account created for username: ", username, "with user ID: ", user_account_id)
+            return redirect(url_for('listings'))
+        except sqlite3.IntegrityError as e:
+            print("Error occurred: ", e)
+            # This error occurs if the username is not unique
+            return render_template('sign_up.html', error="An account with this username already exists. Please choose another username.")
     else:
         return render_template('sign_up.html')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

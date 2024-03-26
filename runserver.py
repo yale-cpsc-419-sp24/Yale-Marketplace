@@ -2,7 +2,6 @@ import sys  # Exit the program if an error occurs
 import argparse  # Parse command line arguments
 from saleapp import app  # The Flask application for the YUAG search application
 
-
 def main():
     """
     Parse command line arguments and run the server.

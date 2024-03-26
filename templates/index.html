@@ -15,7 +15,7 @@
   <h2>Items for sale</h2>
   <div class="grid-container">
     {% for item in items %}
-    <a href="/item/{{ item.id }}" class="item-card">
+    <a href="/item/{{ item.item_id }}" class="item-card">
       <h3>{{ item.name }}</h3>
       <p>{{ item.description[:100] }}{% if item.description|length > 100 %}...{% endif %}</p>
       <img class="item-image" src="{{ item.image_url }}" alt="Item Image">
