@@ -5,15 +5,16 @@
 <div class="menu-bar">
     <a href="/index/">Home</a>
     <a href="/my_account/">My Account</a>
-    <a href="/logout/">Sign out</a>
 </div>
 
-<h2>{{item_id}}</h2>
+<div class="add-item-container">
 <h3>{{ item.name }}</h3>
 <p>{{ item.description }}</p>
+<p>${{ item.asking_price }}</p>
 <img class="item-image" src="{{ item.image_url }}" alt="Item Image">
 <p>Contact: {{ item.contact_method }}</p>
 <body>
   <a href="/submit_item_bid/" class="button">Bid on Item</a>
 </body>
+</div>
 

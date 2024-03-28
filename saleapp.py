@@ -80,6 +80,8 @@ def item_details(item_id):
     item = db.execute('SELECT * FROM item WHERE item_id = ?', (item_id,)).fetchone()
 
     if item:
+        for row in item:
+            print(row)
         return render_template('details.html', item=item, item_id=item_id)
     else:
         return "Item not found", 404
