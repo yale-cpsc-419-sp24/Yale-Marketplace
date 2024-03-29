@@ -95,11 +95,29 @@ body {
       border: 1px solid #ccc;
       padding: 10px;
       color: black;
+      display: flex;
+      flex-direction: column;
       text-decoration: none;
     }
     .item-image {
-      width: 100%;
-      max-height: 200px;
-      object-fit: cover;
-      margin-bottom: 10px;
+      width: auto; /* Ensure automatic width adjustment */
+      height: 95%; /* Ensure image height is 100% of container */
+      position: absolute; /* Position the image absolutely within container */
+      top: 50%; /* Position from top */
+      left: 50%; /* Position from left */
+      transform: translate(-50%, -50%);    
     }
+
+.image-container {
+   width: 100%;
+   min-height: 200px; /* Set a maximum height for the image container */
+   max-height: 95%
+   overflow: hidden;
+   position: relative;
+}
+
+
+
+
+
+

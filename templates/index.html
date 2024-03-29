@@ -16,7 +16,9 @@
     <a href="/item/{{ item.item_id }}" class="item-card">
       <h3>{{ item.name }}</h3>
       <p>{{ item.description[:100] }}{% if item.description|length > 100 %}...{% endif %}</p>
-      <img class="item-image" src="{{ item.image_url }}" alt="Item Image">
+     <div class="image-container">
+       <img class="item-image" src="{{ url_for('static', filename='uploads/' + item.image_path) }}" alt="Item Image">
+     </div>
       <p>Contact: {{ item.contact_method }}</p>
     </a>
     {% endfor %}

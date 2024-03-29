@@ -26,6 +26,7 @@ def create_tables(db_name='marketplace.db'):
         image TEXT,
         negotiable INTEGER,
         sold INTEGER DEFAULT 0,
+        image_path TEXT,
         category_id INTEGER,
         FOREIGN KEY (user_account_id) REFERENCES user (user_account_id),
         FOREIGN KEY (category_id) REFERENCES category (category_id)

@@ -2,7 +2,7 @@ from html import escape  # Escape HTML characters in the search fields to preven
 from flask import Flask, redirect, render_template, request, make_response, url_for, session  # The Flask web framework
 from flask import g  # Store the database connection
 import sqlite3  # Connect to the SQLite database
-
+import os
 import json  # Parse JSON data from the API
 #import backend  # Send SQL queries to the database
 import requests  # Send HTTP requests to the image URL
@@ -90,6 +90,7 @@ def item_details(item_id):
 def add_item():
     return render_template('add_item.html')
 
+
 @app.route('/submit_item/', methods=['GET', 'POST'])
 def submit_item():
     if request.method == 'POST':
@@ -100,14 +101,20 @@ def submit_item():
         # Retrieve form data
         name = request.form['name']
         description = request.form['description']
+        image = request.files['image']
         asking_price = request.form['asking_price']
         negotiable = request.form.get('negotiable', '0')  # Default to '0' if not provided
         category = request.form['category']
         user_id = session['user_id']
+        
+        from datetime import datetime
 
+        time = datetime.now()
+        filename = f"{user_id}_{str(time)}.{image.filename.split('.')[-1]}"
+        image.save(os.path.join(app.root_path, 'static', 'uploads', filename))
         db = get_db()
-        db.execute('INSERT INTO item (user_account_id, name, description, asking_price, negotiable, category_id) VALUES (?, ?, ?, ?, ?, ?)',
-                   (user_id, name, description, asking_price, negotiable, category))
+        db.execute('INSERT INTO item (user_account_id, name, description, asking_price, negotiable, category_id, image_path) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                   (user_id, name, description, asking_price, negotiable, category, filename))
         db.commit()
 
         return redirect(url_for('listings'))
