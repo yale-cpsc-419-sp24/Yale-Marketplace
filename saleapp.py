@@ -72,7 +72,20 @@ def logout():
 
 @app.route('/my_account/')
 def my_account():
-    return render_template('my_account.html', username=session.get('username'))
+    if 'user_id' not in session:
+        return redirect(url_for('log_in'))
+
+    user_id = session['user_id']
+    db = get_db()
+    transactions = db.execute('''
+        SELECT tr.*, it.name AS item_name
+        FROM transaction_request tr
+        JOIN item it ON tr.item_id = it.item_id
+        WHERE it.user_account_id = ?
+        ''', (user_id,)).fetchall()
+
+    return render_template('my_account.html', username=session.get('username'), transactions=transactions)
+
 
 @app.route('/item/<int:item_id>/')
 def item_details(item_id):
@@ -121,18 +134,29 @@ def submit_item():
     else:
         return render_template('add_item.html')
 
-@app.route('/submit_item_bid/', methods=['GET', 'POST'])
-def submit_item_bid():
-    if(request.method=='POST'):
+
+@app.route('/submit_item_bid/<int:item_id>/', methods=['GET', 'POST'])
+def submit_item_bid(item_id):
+    if 'user_id' not in session:
+        return redirect(url_for('log_in'))
+
+    if request.method == 'POST':
+        # Process the bid submission
         offer_price = request.form['offer_price']
         comments = request.form['comments']
-        nit={
-            'offer_price': offer_price,
-            'comments': comments
-        }
-        print(offer_price, comments)
+        buyer_id = session['user_id']  # The ID of the logged-in user
+
+        # Establish a database connection and insert the new transaction
+        db = get_db()
+        db.execute('''
+            INSERT INTO transaction_request (item_id, buyer_id, price, messages, date_time_requested)
+            VALUES (?, ?, ?, ?, datetime('now'))
+            ''', (item_id, buyer_id, offer_price, comments))
+        db.commit()
+
         return redirect(url_for('listings'))
-    return render_template('request_transaction.html')
+
+    return render_template('request_transaction.html', item_id=item_id)
 
 
 @app.route('/log_in/', methods=['GET', 'POST'])

@@ -29,8 +29,16 @@
     <div class="section">
       <div class="section-title">My Transactions</div>
       <ul>
-        {% for transaction in user_transactions %}
-        <li class="transaction-item">{{ transaction }}</li>
+        <!-- Updated section to display transaction details -->
+        {% for transaction in transactions %}
+        <li class="transaction-item">
+          <strong>Item:</strong> {{ transaction.item_name }}<br>
+          <strong>Offer Price:</strong> {{ transaction.price }}<br>
+          <strong>Comments:</strong> {{ transaction.messages }}<br>
+          <strong>Date Requested:</strong> {{ transaction.date_time_requested }}
+        </li>
+        {% else %}
+        <li>No transactions found.</li>
         {% endfor %}
       </ul>
     </div>
