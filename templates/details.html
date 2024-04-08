@@ -15,19 +15,19 @@
 <div class="image-container">
   <img class="item-image" src="{{ url_for('static', filename='uploads/' + item.image_path) }}" alt="Item Image" onerror="this.style.display='none';">
 <p>Username: {{ username }}</p>
-<p>item_usr: {{ item.user_account_id }}</p>
+<p>item_usr: '{{ item.user_account_id }}' '{{ user_id }}'</p>
 </div>
-{% if bids_on_item %}
-{% if username != item.user_account_id %}
-  <ul>
-    {% for bid in bids_on_item %}
-    <li>Bid: Amount: ${{ bid.price }}</li>
-    <button data-bid-id="{{ bid.transaction_id }}" class="accept-btn">Accept</button>
-    <button data-bid-id="{{ bid.transaction_id }}" class="decline-btn">Decline</button>
-    {% endfor %}
-  </ul>
+{% if user_id == item.user_account_id %}
+  {% if bids_on_item %}
+    <ul>
+      {% for bid in bids_on_item %}
+      <li>Bid: Amount: ${{ bid.price }}</li>
+      <button data-bid-id="{{ bid.transaction_id }}" class="accept-btn">Accept</button>
+      <button data-bid-id="{{ bid.transaction_id }}" class="decline-btn">Decline</button>
+      {% endfor %}
+    </ul>
+  {% endif %}
 {% else %}
-{% endif %}
   <a href="/submit_item_bid/{{ item.item_id }}/" class="button">Bid on Item</a>
 {% endif %}
 </div

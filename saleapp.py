@@ -94,13 +94,14 @@ def my_account():
 
 @app.route('/item/<int:item_id>/')
 def item_details(item_id):
+    user_id = session['user_id']
     db = get_db()
     item = db.execute('SELECT * FROM item WHERE item_id = ?', (item_id,)).fetchone()
     username = db.execute('SELECT name FROM user WHERE  user_account_id = ?', (session.get('username'),)).fetchone()
     bids_on_item = db.execute('SELECT * FROM transaction_request WHERE item_id = ?', (item_id,)).fetchall()
     print('bids', bids_on_item)
     if item:
-        return render_template('details.html', item=item, item_id=item_id, username=username, bids_on_item = bids_on_item)
+        return render_template('details.html', item=item, item_id=item_id, user_id=user_id, bids_on_item = bids_on_item)
     else:
         return "Item not found", 404
 
