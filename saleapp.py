@@ -6,11 +6,16 @@ import os
 import json  # Parse JSON data from the API
 #import backend  # Send SQL queries to the database
 import requests  # Send HTTP requests to the image URL
-
+from cas import CASClient
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 app.config['DATABASE'] = 'marketplace.db'
+cas_client = CASClient(
+    version=3,
+    service_url='http://localhost:3000/login?next=%2Findex',
+    server_url='https://secure.its.yale.edu/cas/'
+)
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -54,7 +59,7 @@ dummy_items = [
 
 @app.route('/')
 def root():
-    return redirect(url_for('log_in'))
+    return redirect(url_for('login'))
 
 @app.route('/index/')
 def listings():
@@ -62,13 +67,6 @@ def listings():
     items = db.execute('SELECT * FROM item').fetchall()
     #print(session.get('username'))
     return render_template('index.html', items=items)
-
-
-@app.route('/logout/')
-def logout():
-    print("logged_out")
-    session.pop('username', None)
-    return redirect(url_for('log_in'))
 
 @app.route('/my_account/')
 def my_account():
@@ -91,7 +89,7 @@ def my_account():
     print(items_posted)
 
 
-    return render_template('my_account.html', username=session.get('username'), transactions=transactions, items_posted=items_posted)
+    return render_template('my_account.html', username=session.get('user_id'), transactions=transactions, items_posted=items_posted)
 
 
 @app.route('/item/<int:item_id>/')
@@ -168,7 +166,7 @@ def submit_item_bid(item_id):
         return render_template('request_transaction.html', item_id=item_id, item=item)
 
 
-@app.route('/log_in/', methods=['GET', 'POST'])
+@app.route('/login/', methods=['GET', 'POST'])
 def log_in():
     if request.method == 'POST':
         username = request.form['username']
@@ -179,8 +177,7 @@ def log_in():
 
         if user:
             # User found, proceed with login
-            session['username'] = username
-            session['user_id'] = user['user_account_id']  # Store the user's ID in the session
+            session['user_id'] = username  # Store the user's ID in the session
             return redirect(url_for('listings'))
         else:
             # No user found with the given username
@@ -189,29 +186,93 @@ def log_in():
         return render_template('log_in.html')
 
     
-@app.route('/sign_up/', methods=['GET', 'POST'])
-def sign_up():
-    if request.method == 'POST':
-        username = request.form['username']
-        
-        db = get_db()
-        try:
-            # Inserting the new user into the database
-            cursor = db.execute('INSERT INTO user (name, email_address) VALUES (?, ?)', (username, username + "@example.com"))
-            db.commit()
-            
-            # Fetch the user_account_id of the newly created user
-            user_account_id = cursor.lastrowid
-            
-            # Store both username and user_account_id in the session
-            session['username'] = username
-            session['user_id'] = user_account_id  # Store the user's ID in the session
-            
-            print("Account created for username: ", username, "with user ID: ", user_account_id)
-            return redirect(url_for('listings'))
-        except sqlite3.IntegrityError as e:
-            print("Error occurred: ", e)
-            # This error occurs if the username is not unique
-            return render_template('sign_up.html', error="An account with this username already exists. Please choose another username.")
-    else:
-        return render_template('sign_up.html')
+#@app.route('/sign_up/', methods=['GET', 'POST'])
+#def sign_up():
+#    if request.method == 'POST':
+#        username = request.form['username']
+#        
+#        db = get_db()
+#        try:
+#            # Inserting the new user into the database
+#            cursor = db.execute('INSERT INTO user (name, email_address) VALUES (?, ?)', (username, username + "@example.com"))
+#            db.commit()
+#            
+#            # Fetch the user_account_id of the newly created user
+#            user_account_id = cursor.lastrowid
+#            
+#            # Store both username and user_account_id in the session
+#            session['username'] = username
+#            session['user_id'] = user_account_id  # Store the user's ID in the session
+#            
+#            print("Account created for username: ", username, "with user ID: ", user_account_id)
+#            return redirect(url_for('listings'))
+#        except sqlite3.IntegrityError as e:
+#            print("Error occurred: ", e)
+#            # This error occurs if the username is not unique
+#            return render_template('sign_up.html', error="An account with this username already exists. Please choose another username.")
+#    else:
+#        return render_template('sign_up.html')
+
+#
+#@app.route('/logout/')
+#def logout():
+#    print("logged_out")
+#    session.pop('username', None)
+#    return redirect(url_for('log_in'))
+
+
+
+@app.route('/login-')
+def login():
+    if 'user_id' in session:
+        # Already logged in
+        return redirect(url_for('listings'))
+
+    next = request.args.get('next')
+    ticket = request.args.get('ticket')
+    if not ticket:
+        # No ticket, the request come from end user, send to CAS login
+        cas_login_url = cas_client.get_login_url()
+        app.logger.debug('CAS login URL: %s', cas_login_url)
+        return redirect(cas_login_url)
+
+    # There is a ticket, the request come from CAS as callback.
+    # need call `verify_ticket()` to validate ticket and get user profile.
+    app.logger.debug('ticket: %s', ticket)
+    app.logger.debug('next: %s', next)
+
+    user, attributes, pgtiou = cas_client.verify_ticket(ticket)
+
+    app.logger.debug(
+        'CAS verify ticket response: user: %s, attributes: %s, pgtiou: %s', user, attributes, pgtiou)
+
+    if not user:
+        return 'Failed to verify ticket. <a href="/login">Login</a>'
+    else:  # Login successfully, redirect according `next` query parameter.
+        session['user_id'] = user
+        return redirect(next)
+
+@app.route('/logout/')
+def logout():
+    print("----------")
+    redirect_url = url_for('logout_callback', _external=True)
+    cas_logout_url = cas_client.get_logout_url(redirect_url)
+    app.logger.debug('CAS logout URL: %s', cas_logout_url)
+
+    return redirect(cas_logout_url)
+
+@app.route('/logout_callback')
+def logout_callback():
+    # redirect from CAS logout request after CAS logout successfully
+    session.pop('user_id', None)
+    return 'Logged out from CAS. <a href="/login">Login</a>'
+
+
+
+
+
+
+
+
+
+
