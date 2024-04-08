@@ -9,14 +9,27 @@
 
 <div class="add-item-container">
 <h3>{{ item.name }}</h3>
-<p>{{ item.description }}</p>
-<p>${{ item.asking_price }}</p>
+<p>Item Description: {{ item.description }}</p>
+<p>Asking Price: ${{ item.asking_price }}</p>
+<p>Negotiable: {{ item.Negotiable }}</p>
 <div class="image-container">
-  <img class="item-image" src="{{ url_for('static', filename='uploads/' + item.image_path) }}" alt="Item Image">
+  <img class="item-image" src="{{ url_for('static', filename='uploads/' + item.image_path) }}" alt="Item Image" onerror="this.style.display='none';">
+<p>Username: {{ username }}</p>
+<p>item_usr: {{ item.user_account_id }}</p>
 </div>
-<p>Contact: {{ item.contact_method }}</p>
-<body>
+{% if bids_on_item %}
+{% if username != item.user_account_id %}
+  <ul>
+    {% for bid in bids_on_item %}
+    <li>Bid: Amount: ${{ bid.price }}</li>
+    <button data-bid-id="{{ bid.transaction_id }}" class="accept-btn">Accept</button>
+    <button data-bid-id="{{ bid.transaction_id }}" class="decline-btn">Decline</button>
+    {% endfor %}
+  </ul>
+{% else %}
+{% endif %}
   <a href="/submit_item_bid/{{ item.item_id }}/" class="button">Bid on Item</a>
-</body>
-</div>
+{% endif %}
+</div
+>
 

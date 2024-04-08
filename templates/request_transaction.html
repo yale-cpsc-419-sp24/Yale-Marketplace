@@ -16,6 +16,9 @@
   <h1>Add New Item</h1>
   <form action="/submit_item_bid/{{ item_id }}/" method="post" enctype="multipart/form-data">
     
+    <p>Price: ${{ item.asking_price }} </p>
+    <p>Negotiable: {{ item.Negotiable }} </p>
+
     <label for="offer_price">What you are willing to pay:</label><br>
     <input type="number" id="offer_price" name="offer_price" step="0.01" required><br><br>
 

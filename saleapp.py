@@ -83,19 +83,26 @@ def my_account():
         JOIN item it ON tr.item_id = it.item_id
         WHERE it.user_account_id = ?
         ''', (user_id,)).fetchall()
+    items_posted = db.execute('''
+        SELECT *
+        FROM item 
+        WHERE item.user_account_id = ?
+        ''', (user_id,)).fetchall()
+    print(items_posted)
 
-    return render_template('my_account.html', username=session.get('username'), transactions=transactions)
+
+    return render_template('my_account.html', username=session.get('username'), transactions=transactions, items_posted=items_posted)
 
 
 @app.route('/item/<int:item_id>/')
 def item_details(item_id):
     db = get_db()
     item = db.execute('SELECT * FROM item WHERE item_id = ?', (item_id,)).fetchone()
-
+    username = db.execute('SELECT name FROM user WHERE  user_account_id = ?', (session.get('username'),)).fetchone()
+    bids_on_item = db.execute('SELECT * FROM transaction_request WHERE item_id = ?', (item_id,)).fetchall()
+    print('bids', bids_on_item)
     if item:
-        for row in item:
-            print(row)
-        return render_template('details.html', item=item, item_id=item_id)
+        return render_template('details.html', item=item, item_id=item_id, username=username, bids_on_item = bids_on_item)
     else:
         return "Item not found", 404
 
@@ -140,6 +147,7 @@ def submit_item_bid(item_id):
     if 'user_id' not in session:
         return redirect(url_for('log_in'))
 
+    db = get_db()
     if request.method == 'POST':
         # Process the bid submission
         offer_price = request.form['offer_price']
@@ -147,7 +155,6 @@ def submit_item_bid(item_id):
         buyer_id = session['user_id']  # The ID of the logged-in user
 
         # Establish a database connection and insert the new transaction
-        db = get_db()
         db.execute('''
             INSERT INTO transaction_request (item_id, buyer_id, price, messages, date_time_requested)
             VALUES (?, ?, ?, ?, datetime('now'))
@@ -155,8 +162,10 @@ def submit_item_bid(item_id):
         db.commit()
 
         return redirect(url_for('listings'))
+    else:
+        item = db.execute('SELECT * FROM item WHERE item_id = ?', (item_id,)).fetchone()
 
-    return render_template('request_transaction.html', item_id=item_id)
+        return render_template('request_transaction.html', item_id=item_id, item=item)
 
 
 @app.route('/log_in/', methods=['GET', 'POST'])

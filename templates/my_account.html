@@ -17,9 +17,12 @@
     <div class="section">
       <div class="section-title">My Posts</div>
       <ul>
-        {% for post in user_posts %}
-        <li class="post-item">{{ post }}</li>
-        {% endfor %}
+      {% for item in items_posted %}
+      <a href="/item/{{ item.item_id }}" class="item-name-card">
+        <h3>{{ item.name }}</h3>
+      </a>
+      {% endfor %}
+
       </ul>
       <form action="/post/" method="GET">
         <button class="button" type="submit">Add Item</button>
@@ -27,7 +30,7 @@
     </div>
 
     <div class="section">
-      <div class="section-title">My Transactions</div>
+      <div class="section-title">My Transactions Requests</div>
       <ul>
         <!-- Updated section to display transaction details -->
         {% for transaction in transactions %}
