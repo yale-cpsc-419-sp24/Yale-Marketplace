@@ -86,10 +86,17 @@ def my_account():
         FROM item 
         WHERE item.user_account_id = ?
         ''', (user_id,)).fetchall()
-    print(items_posted)
+    bids_posted = db.execute('''
+        select tr.price as offer_amount, tr.accepted_declined, item.*
+        from transaction_request tr
+        join item
+        on item.item_id = tr.item_id
+        where buyer_id == ?        
+        ''',(user_id,)).fetchall()
 
+    
 
-    return render_template('my_account.html', username=session.get('user_id'), transactions=transactions, items_posted=items_posted)
+    return render_template('my_account.html', username=session.get('user_id'), transactions=transactions, items_posted=items_posted, bids_posted = bids_posted)
 
 
 @app.route('/item/<int:item_id>/')
@@ -167,7 +174,7 @@ def submit_item_bid(item_id):
         return render_template('request_transaction.html', item_id=item_id, item=item)
 
 
-@app.route('/login/', methods=['GET', 'POST'])
+@app.route('/login-/', methods=['GET', 'POST'])
 def log_in():
     if request.method == 'POST':
         username = request.form['username']
@@ -223,7 +230,7 @@ def log_in():
 
 
 
-@app.route('/login-')
+@app.route('/login/')
 def login():
     if 'user_id' in session:
         # Already logged in

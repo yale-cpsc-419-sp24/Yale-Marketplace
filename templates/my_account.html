@@ -33,12 +33,16 @@
       <div class="section-title">My Transactions Requests</div>
       <ul>
         <!-- Updated section to display transaction details -->
-        {% for transaction in transactions %}
+        {% for transaction in bids_posted %}
         <li class="transaction-item">
-          <strong>Item:</strong> {{ transaction.item_name }}<br>
-          <strong>Offer Price:</strong> {{ transaction.price }}<br>
-          <strong>Comments:</strong> {{ transaction.messages }}<br>
-          <strong>Date Requested:</strong> {{ transaction.date_time_requested }}
+          <strong>Item Name:</strong> {{ transaction.name }}<br>
+          <strong>Offer Price:</strong> ${{ transaction.offer_amount }}<br>
+          <strong>Posted Price:</strong> ${{ transaction.asking_price }}<br>
+          {% if transaction.accepted_declined %}
+            <strong>Accepted?:</strong> {{ transaction.accepted_declined }}<br>
+          {% else %}
+            <strong>Accepted?: </strong>No Response<br>
+          {% endif %}
         </li>
         {% else %}
         <li>No transactions found.</li>
