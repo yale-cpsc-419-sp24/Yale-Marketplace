@@ -59,7 +59,7 @@ dummy_items = [
 
 @app.route('/')
 def root():
-    return redirect(url_for('log_in'))
+    return redirect(url_for('login'))
 
 @app.route('/index/')
 def listings():
@@ -105,7 +105,12 @@ def item_details(item_id):
     db = get_db()
     item = db.execute('SELECT * FROM item WHERE item_id = ?', (item_id,)).fetchone()
     username = db.execute('SELECT name FROM user WHERE  user_account_id = ?', (session.get('username'),)).fetchone()
-    bids_on_item = db.execute('SELECT * FROM transaction_request WHERE item_id = ?', (item_id,)).fetchall()
+    bids_on_item = db.execute('''
+    select tr.*, us.phone_number, us.email_address
+    from transaction_request tr
+    join user us
+    on us.user_account_id = tr.buyer_id
+    where tr.item_id = ?''', (item_id,)).fetchall()
     print('bids', bids_on_item)
     if item:
         return render_template('details.html', item=item, item_id=item_id, user_id=user_id, bids_on_item = bids_on_item)
@@ -198,14 +203,14 @@ def accept_bid(bid_id):
     db.execute('UPDATE transaction_request SET accepted_declined = "accepted" WHERE transaction_id = ?', (bid_id,))
     db.commit()
     bid = db.execute('SELECT * FROM transaction_request WHERE transaction_id = ?', (bid_id,)).fetchall()
-    for i in bid:
-        for j in i:
-            print(j)
+    #for i in bid:
+    #    for j in i:
+    #        print(j)
 
     bids_on_item = db.execute('SELECT * FROM transaction_request WHERE item_id = ?', (str(bid[0]['item_id']),)).fetchall()
-    for i in bids_on_item:
-        for j in i:
-            print(j)
+    #for i in bids_on_item:
+    #    for j in i:
+    #        print(j)
 
     return jsonify(success=True)
 
@@ -214,10 +219,6 @@ def decline_bid(bid_id):
     db = get_db()
     db.execute('UPDATE transaction_request SET accepted_declined = "declined" WHERE transaction_id = ?', (bid_id,))
     db.commit()
-    bid = db.execute('SELECT * FROM transaction_request WHERE item_id = ?', (item_id,)).fetchall()
-    for i in bid:
-        for j in i:
-            print(j)
     return jsonify(success=True)
 
 @app.route('/login/', methods=['GET', 'POST'])
@@ -304,7 +305,26 @@ def login():
         return 'Failed to verify ticket. <a href="/login">Login</a>'
     else:  # Login successfully, redirect according `next` query parameter.
         session['user_id'] = user
+        session['username'] = user
+        db = get_db()
+        user_in_db = db.execute('SELECT * FROM user WHERE user_account_id = ?', (user,)).fetchall()
+        if(len(user_in_db) == 0):
+            return render_template('add_user_details.html')
         return redirect(next)
+
+@app.route('/submit_user_info/', methods=['GET', 'POST'])
+def submit_user_info():
+    username = session['user_id']
+    name = request.form['name']
+    email = request.form['email']
+    phone = request.form['phone']
+    
+    print(f"Name: {name}, Email: {email}, Phone: {phone}")
+    db = get_db()
+    cursor = db.execute('INSERT INTO user (user_account_id, name, email_address, phone_number) VALUES (?, ?, ?, ?)', (username, name,  email, phone,))
+    db.commit()
+
+    return redirect(url_for('listings'))
 
 @app.route('/logout/')
 def logout():
@@ -319,6 +339,7 @@ def logout():
 def logout_callback():
     # redirect from CAS logout request after CAS logout successfully
     session.pop('user_id', None)
+    session.pop('username', None)
     return 'Logged out from CAS. <a href="/login">Login</a>'
 
 

@@ -31,6 +31,7 @@
       Bid: Amount: ${{ bid.price }}
       {% if bid.accepted_declined == 'accepted' %}
         <strong>Accepted</strong>
+        Contact Buyer: Email is: {{ bid.email_address }} Phone number is: {{ bid.phone_number}} 
       {% elif bid.accepted_declined == 'declined' %}
         <strong>Declined</strong>
       {% else %}
@@ -54,6 +55,7 @@ $('.accept-btn').click(function() {
         success: function() {
             var bidItem = $('#bid-' + bidId);
             bidItem.html(bidItem.text() + ' <strong style="color: green;">Accepted</strong>');
+            location.reload();
         }
     });
 });
