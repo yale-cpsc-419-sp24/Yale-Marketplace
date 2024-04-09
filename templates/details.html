@@ -1,17 +1,22 @@
 <!DOCTYPE html>
+<html>
 <head>
   <link rel="stylesheet" href="/static/styles.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <div class="menu-bar">
     <a href="/index/">Home</a>
     <a href="/my_account/">My Account</a>
 </div>
-
+<body>
+  
+</body>
 <div class="add-item-container">
-<h3>{{ item.name }}</h3>
+<h2>{{ item.name }}</h2>
 <p>Item Description: {{ item.description }}</p>
 <p>Asking Price: ${{ item.asking_price }}</p>
 <p>Negotiable: {{ item.Negotiable }}</p>
+<p>Highest Bid: ${{ item.highest_bid }} </p>
 <div class="image-container">
   <img class="item-image" src="{{ url_for('static', filename='uploads/' + item.image_path) }}" alt="Item Image" onerror="this.style.display='none';">
 <p>Username: {{ username }}</p>
@@ -19,17 +24,54 @@
 </div>
 {% if user_id == item.user_account_id %}
   {% if bids_on_item %}
-    <ul>
+    <h3>Bids Psted:</h3>
       {% for bid in bids_on_item %}
-      <li>Bid: Amount: ${{ bid.price }}</li>
-      <button data-bid-id="{{ bid.transaction_id }}" class="accept-btn">Accept</button>
-      <button data-bid-id="{{ bid.transaction_id }}" class="decline-btn">Decline</button>
-      {% endfor %}
-    </ul>
+      <li id="bid-{{ bid.transaction_id }}"
+        class="{% if bid.status == 'accepted' %}accepted-bid{% elif bid.status == 'declined' %}declined-bid{% endif %}">
+      Bid: Amount: ${{ bid.price }}
+      {% if bid.accepted_declined == 'accepted' %}
+        <strong>Accepted</strong>
+      {% elif bid.accepted_declined == 'declined' %}
+        <strong>Declined</strong>
+      {% else %}
+        <button data-bid-id="{{ bid.transaction_id }}" class="accept-btn">Accept</button>
+        <button data-bid-id="{{ bid.transaction_id }}" class="decline-btn">Decline</button>
+      {% endif %}
+    </li>       {% endfor %}
   {% endif %}
 {% else %}
   <a href="/submit_item_bid/{{ item.item_id }}/" class="button">Bid on Item</a>
 {% endif %}
-</div
->
+</div>
+<script>
+$(document).ready(function() {
+  
+$('.accept-btn').click(function() {
+    var bidId = $(this).data('bid-id');
+    $.ajax({
+        url: '/accept_bid/' + bidId,
+        method: 'POST',
+        success: function() {
+            var bidItem = $('#bid-' + bidId);
+            bidItem.html(bidItem.text() + ' <strong style="color: green;">Accepted</strong>');
+        }
+    });
+});
 
+$('.decline-btn').click(function() {
+    var bidId = $(this).data('bid-id');
+    $.ajax({
+        url: '/decline_bid/' + bidId,
+        method: 'POST',
+        success: function() {
+            var bidItem = $('#bid-' + bidId);
+            bidItem.html(bidItem.text() + ' <strong style="color: red;">Declined</strong>');
+        }
+    });
+});
+
+});
+</script>
+
+</body>
+</html>

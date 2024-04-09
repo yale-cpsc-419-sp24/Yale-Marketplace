@@ -1,5 +1,5 @@
 from html import escape  # Escape HTML characters in the search fields to prevent XSS attacks
-from flask import Flask, redirect, render_template, request, make_response, url_for, session  # The Flask web framework
+from flask import Flask, redirect, render_template, request, make_response, url_for, session, jsonify  # The Flask web framework
 from flask import g  # Store the database connection
 import sqlite3  # Connect to the SQLite database
 import os
@@ -165,6 +165,23 @@ def submit_item_bid(item_id):
             INSERT INTO transaction_request (item_id, buyer_id, price, messages, date_time_requested)
             VALUES (?, ?, ?, ?, datetime('now'))
             ''', (item_id, buyer_id, offer_price, comments))
+        #get highest bid so far, check if none. if non eupdate, else update only if new bid larger
+        highest_bid = db.execute('''
+        select highest_bid
+        from item
+        where item_id == ?        
+        ''',(item_id,)).fetchone()[0]
+        print(highest_bid, highest_bid == None, highest_bid == '')
+        if highest_bid == None or float(offer_price) > float(highest_bid):
+            highest_bid = offer_price
+            db.execute('''
+            UPDATE item
+            SET highest_bid = ?
+            WHERE item_id = ?;
+            ''', (offer_price, item_id))
+   
+
+
         db.commit()
 
         return redirect(url_for('listings'))
@@ -173,6 +190,35 @@ def submit_item_bid(item_id):
 
         return render_template('request_transaction.html', item_id=item_id, item=item)
 
+
+@app.route('/accept_bid/<int:bid_id>', methods=['POST'])
+def accept_bid(bid_id):
+    
+    db = get_db()
+    db.execute('UPDATE transaction_request SET accepted_declined = "accepted" WHERE transaction_id = ?', (bid_id,))
+    db.commit()
+    bid = db.execute('SELECT * FROM transaction_request WHERE transaction_id = ?', (bid_id,)).fetchall()
+    for i in bid:
+        for j in i:
+            print(j)
+
+    bids_on_item = db.execute('SELECT * FROM transaction_request WHERE item_id = ?', (str(bid[0]['item_id']),)).fetchall()
+    for i in bids_on_item:
+        for j in i:
+            print(j)
+
+    return jsonify(success=True)
+
+@app.route('/decline_bid/<int:bid_id>', methods=['POST'])
+def decline_bid(bid_id):
+    db = get_db()
+    db.execute('UPDATE transaction_request SET accepted_declined = "declined" WHERE transaction_id = ?', (bid_id,))
+    db.commit()
+    bid = db.execute('SELECT * FROM transaction_request WHERE item_id = ?', (item_id,)).fetchall()
+    for i in bid:
+        for j in i:
+            print(j)
+    return jsonify(success=True)
 
 @app.route('/login/', methods=['GET', 'POST'])
 def log_in():
