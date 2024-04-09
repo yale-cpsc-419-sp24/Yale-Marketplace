@@ -7,7 +7,7 @@ def create_tables(db_name='marketplace.db'):
     # Create 'user' table
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS user (
-        user_account_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_account_id TEXT PRIMARY KEY,
         name TEXT NOT NULL,
         email_address TEXT NOT NULL UNIQUE,
         phone_number TEXT,
@@ -19,10 +19,11 @@ def create_tables(db_name='marketplace.db'):
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS item (
         item_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_account_id INTEGER,
+        user_account_id TEXT,
         name TEXT NOT NULL,
         description TEXT NOT NULL,
         asking_price TEXT,
+        highest_bid INTEGER,
         image TEXT,
         negotiable INTEGER,
         sold INTEGER DEFAULT 0,

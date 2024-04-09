@@ -59,7 +59,7 @@ dummy_items = [
 
 @app.route('/')
 def root():
-    return redirect(url_for('login'))
+    return redirect(url_for('log_in'))
 
 @app.route('/index/')
 def listings():
@@ -174,7 +174,7 @@ def submit_item_bid(item_id):
         return render_template('request_transaction.html', item_id=item_id, item=item)
 
 
-@app.route('/login-/', methods=['GET', 'POST'])
+@app.route('/login/', methods=['GET', 'POST'])
 def log_in():
     if request.method == 'POST':
         username = request.form['username']
@@ -194,34 +194,34 @@ def log_in():
         return render_template('log_in.html')
 
     
-#@app.route('/sign_up/', methods=['GET', 'POST'])
-#def sign_up():
-#    if request.method == 'POST':
-#        username = request.form['username']
-#        
-#        db = get_db()
-#        try:
-#            # Inserting the new user into the database
-#            cursor = db.execute('INSERT INTO user (name, email_address) VALUES (?, ?)', (username, username + "@example.com"))
-#            db.commit()
-#            
-#            # Fetch the user_account_id of the newly created user
-#            user_account_id = cursor.lastrowid
-#            
-#            # Store both username and user_account_id in the session
-#            session['username'] = username
-#            session['user_id'] = user_account_id  # Store the user's ID in the session
-#            
-#            print("Account created for username: ", username, "with user ID: ", user_account_id)
-#            return redirect(url_for('listings'))
-#        except sqlite3.IntegrityError as e:
-#            print("Error occurred: ", e)
-#            # This error occurs if the username is not unique
-#            return render_template('sign_up.html', error="An account with this username already exists. Please choose another username.")
-#    else:
-#        return render_template('sign_up.html')
+@app.route('/sign_up/', methods=['GET', 'POST'])
+def sign_up():
+    if request.method == 'POST':
+        username = request.form['username']
+        
+        db = get_db()
+        try:
+            # Inserting the new user into the database
+            cursor = db.execute('INSERT INTO user (user_account_id, name, email_address) VALUES (?, ?, ?)', (username, username,  username + "@example.com"))
+            db.commit()
+            
+            # Fetch the user_account_id of the newly created user
+            user_account_id = username
+            
+            # Store both username and user_account_id in the session
+            session['username'] = username
+            session['user_id'] = username  # Store the user's ID in the session
+            
+            #print("Account created for username: ", username, "with user ID: ", user_account_id)
+            return redirect(url_for('listings'))
+        except sqlite3.IntegrityError as e:
+            print("Error occurred: ", e)
+            # This error occurs if the username is not unique
+            return render_template('sign_up.html', error="An account with this username already exists. Please choose another username.")
+    else:
+        return render_template('sign_up.html')
 
-#
+
 #@app.route('/logout/')
 #def logout():
 #    print("logged_out")
