@@ -63,31 +63,47 @@ def root():
 
 # @app.route('/index/')
 # def listings():
+#     search_query = request.args.get('search', '')
+#     category_filter = request.args.get('category', None)
 #     db = get_db()
-#     items = db.execute('SELECT * FROM item').fetchall()
-#     #print(session.get('username'))
-#     return render_template('index.html', items=items)
 
+#     if search_query and category_filter:
+#         items = db.execute('SELECT * FROM item WHERE name LIKE ? AND category_id = ?', (f'%{search_query}%', category_filter)).fetchall()
+#     elif search_query:
+#         items = db.execute('SELECT * FROM item WHERE name LIKE ?', (f'%{search_query}%',)).fetchall()
+#     elif category_filter:
+#         items = db.execute('SELECT * FROM item WHERE category_id = ?', (category_filter,)).fetchall()
+#     else:
+#         items = db.execute('SELECT * FROM item').fetchall()
+
+#     categories = db.execute('SELECT DISTINCT category_id FROM item').fetchall()
+
+#     return render_template('index.html', items=items, search_query=search_query, categories=categories, current_category=category_filter)
 
 @app.route('/index/')
 def listings():
     search_query = request.args.get('search', '')
     category_filter = request.args.get('category', None)
+    condition_filter = request.args.get('condition', None)
     db = get_db()
 
-    if search_query and category_filter:
-        items = db.execute('SELECT * FROM item WHERE name LIKE ? AND category_id = ?', (f'%{search_query}%', category_filter)).fetchall()
-    elif search_query:
-        items = db.execute('SELECT * FROM item WHERE name LIKE ?', (f'%{search_query}%',)).fetchall()
-    elif category_filter:
-        items = db.execute('SELECT * FROM item WHERE category_id = ?', (category_filter,)).fetchall()
-    else:
-        items = db.execute('SELECT * FROM item').fetchall()
+    query = 'SELECT * FROM item WHERE 1=1'
+    params = []
 
+    if search_query:
+        query += ' AND name LIKE ?'
+        params.append(f'%{search_query}%')
+    if category_filter:
+        query += ' AND category_id = ?'
+        params.append(category_filter)
+    if condition_filter:
+        query += ' AND condition = ?'
+        params.append(condition_filter)
+
+    items = db.execute(query, params).fetchall()
     categories = db.execute('SELECT DISTINCT category_id FROM item').fetchall()
 
-    return render_template('index.html', items=items, search_query=search_query, categories=categories, current_category=category_filter)
-
+    return render_template('index.html', items=items, search_query=search_query, categories=categories, current_category=category_filter, current_condition=condition_filter)
 
 @app.route('/my_account/')
 def my_account():
@@ -155,7 +171,7 @@ def submit_item():
         description = request.form['description']
         image = request.files['image']
         asking_price = request.form['asking_price']
-        negotiable = request.form.get('negotiable', '0')  # Default to '0' if not provided
+        condition = request.form.get('condition', '0')  # Default to '0' if not provided
         category = request.form['category']
         user_id = session['user_id']
         
@@ -165,8 +181,8 @@ def submit_item():
         filename = f"{user_id}_{str(time)}.{image.filename.split('.')[-1]}"
         image.save(os.path.join(app.root_path, 'static', 'uploads', filename))
         db = get_db()
-        db.execute('INSERT INTO item (user_account_id, name, description, asking_price, negotiable, category_id, image_path) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                   (user_id, name, description, asking_price, negotiable, category, filename))
+        db.execute('INSERT INTO item (user_account_id, name, description, asking_price, condition, category_id, image_path) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                   (user_id, name, description, asking_price, condition, category, filename))
         db.commit()
 
         return redirect(url_for('listings'))
