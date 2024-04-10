@@ -20,9 +20,14 @@
                 <option value="{{ category.category_id }}" {% if category.category_id == current_category %}selected{% endif %}>{{ category.category_id }}</option>
             {% endfor %}
         </select>
+        <select name="condition">
+            <option value="">Any Condition</option>
+            <option value="New" {% if current_condition == "New" %}selected{% endif %}>New</option>
+            <option value="Used" {% if current_condition == "Used" %}selected{% endif %}>Used</option>
+        </select>
         <button type="submit">Search</button>
     </form>
-  </div>  
+  </div>
   <div class="grid-container">
     {% for item in items %}
     <a href="/item/{{ item.item_id }}" class="item-card">
@@ -32,7 +37,7 @@
        <img class="item-image" src="{{ url_for('static', filename='uploads/' + item.image_path) }}" alt="Item Image" onerror="this.style.display='none';">
      </div>
       <p>Price: ${{ item.asking_price }} </p>
-      <p>Negotiable: {{ item.Negotiable }} </p>
+      <p>Condition: {{ item.Condition }} </p>
       <p>Highest Bid: ${{ item.highest_bid }} </p>
     </a>
     {% endfor %}
