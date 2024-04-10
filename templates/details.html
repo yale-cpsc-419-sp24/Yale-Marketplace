@@ -15,7 +15,7 @@
 <h2>{{ item.name }}</h2>
 <p>Item Description: {{ item.description }}</p>
 <p>Asking Price: ${{ item.asking_price }}</p>
-<p>Negotiable: {{ item.Negotiable }}</p>
+<p>Condition: {{ item.Condition }}</p>
 <p>Highest Bid: ${{ item.highest_bid }} </p>
 <div class="image-container">
   <img class="item-image" src="{{ url_for('static', filename='uploads/' + item.image_path) }}" alt="Item Image" onerror="this.style.display='none';">

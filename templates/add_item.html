@@ -27,17 +27,18 @@
     <label for="image">Image:</label><br>
     <input type="file" id="image" name="image" accept="image/*" ><br><br>
 
-    <label for="negotiable">Negotiable:</label><br>
-    <input type="radio" id="negotiable_yes" name="negotiable" value="yes" required>
-    <label for="negotiable_yes">Yes</label>
-    <input type="radio" id="negotiable_no" name="negotiable" value="no" required>
-    <label for="negotiable_no">No</label><br><br>
+    <label for="condition">Condition:</label><br>
+    <input type="radio" id="condition_new" name="condition" value="New" required>
+    <label for="condition_new">New</label>
+    <input type="radio" id="condition_used" name="condition" value="Used" required>
+    <label for="condition_used">Used</label><br><br>
 
     <label for="category">Category:</label><br>
-    <select id="category" name="category" multiple>
-      <option value="electronics">Electronics</option>
-      <option value="clothing">Clothing</option>
-      <option value="furniture">Furniture</option>
+    <select id="category" name="category" multiple required>
+      <option value="Electronics">Electronics</option>
+      <option value="Clothing">Clothing</option>
+      <option value="Furniture">Furniture</option>
+      <option value="Other">Other</option>
     </select><br><br>
 
     <input type="submit" value="Submit">

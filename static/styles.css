@@ -1,38 +1,38 @@
 body {
       font-family: Arial, sans-serif;
-    }
+}
 .container {
-      max-width: 800px;
-      margin: 50px auto;
-      padding: 20px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      background-color: #f9f9f9;
-    }
-    .section {
-      margin-bottom: 20px;
-    }
-    .section-title {
-      font-size: 20px;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-    .post-item, .transaction-item {
-      margin-bottom: 10px;
-    }
-    .button {
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #007bff;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .button:hover {
-      background-color: #0056b3;
-    }
-  .login-container {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+.section {
+  margin-bottom: 20px;
+}
+.section-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.post-item, .transaction-item {
+  margin-bottom: 10px;
+}
+.button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.button:hover {
+  background-color: #0056b3;
+}
+.login-container {
   max-width: 400px;
   margin: 100px auto;
   padding: 20px;
@@ -50,7 +50,7 @@ body {
   background-color: #f9f9f9;
 }
 .add-item-container textarea {
-  width: 95%; /* Make the textarea fill the width of its containing div */
+  width: 95%;
   min-height: 3em;
 }
 .form-group {
@@ -87,10 +87,10 @@ body {
 
 
 .grid-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 20px;
-    }
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
 .item-card {
   border: 1px solid #ccc;
   padding: 10px;
@@ -124,14 +124,44 @@ body {
 
 .image-container {
    width: 100%;
-   min-height: 200px; /* Set a maximum height for the image container */
-   max-height: 95%
+   min-height: 200px;
+   max-height: 95%;
    overflow: hidden;
    position: relative;
 }
 
+.search-container {
+  text-align: center;
+  margin: 20px 0;
+}
 
+.search-container input[type="text"] {
+  width: 200px;
+  padding: 10px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
 
+.search-container button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
 
+.search-container button:hover {
+  background-color: #0056b3;
+}
+
+.search-container select {
+  padding: 10px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: white;
+}
 
 
