@@ -61,12 +61,33 @@ dummy_items = [
 def root():
     return redirect(url_for('login'))
 
+# @app.route('/index/')
+# def listings():
+#     db = get_db()
+#     items = db.execute('SELECT * FROM item').fetchall()
+#     #print(session.get('username'))
+#     return render_template('index.html', items=items)
+
+
 @app.route('/index/')
 def listings():
+    search_query = request.args.get('search', '')
+    category_filter = request.args.get('category', None)
     db = get_db()
-    items = db.execute('SELECT * FROM item').fetchall()
-    #print(session.get('username'))
-    return render_template('index.html', items=items)
+
+    if search_query and category_filter:
+        items = db.execute('SELECT * FROM item WHERE name LIKE ? AND category_id = ?', (f'%{search_query}%', category_filter)).fetchall()
+    elif search_query:
+        items = db.execute('SELECT * FROM item WHERE name LIKE ?', (f'%{search_query}%',)).fetchall()
+    elif category_filter:
+        items = db.execute('SELECT * FROM item WHERE category_id = ?', (category_filter,)).fetchall()
+    else:
+        items = db.execute('SELECT * FROM item').fetchall()
+
+    categories = db.execute('SELECT DISTINCT category_id FROM item').fetchall()
+
+    return render_template('index.html', items=items, search_query=search_query, categories=categories, current_category=category_filter)
+
 
 @app.route('/my_account/')
 def my_account():
@@ -341,13 +362,4 @@ def logout_callback():
     session.pop('user_id', None)
     session.pop('username', None)
     return 'Logged out from CAS. <a href="/login">Login</a>'
-
-
-
-
-
-
-
-
-
 

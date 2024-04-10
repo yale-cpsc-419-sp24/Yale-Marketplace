@@ -125,13 +125,43 @@ body {
 .image-container {
    width: 100%;
    min-height: 200px; /* Set a maximum height for the image container */
-   max-height: 95%
+   max-height: 95%;
    overflow: hidden;
    position: relative;
 }
 
+.search-container {
+  text-align: center;
+  margin: 20px 0;
+}
 
+.search-container input[type="text"] {
+  width: 200px;
+  padding: 10px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
 
+.search-container button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
 
+.search-container button:hover {
+  background-color: #0056b3;
+}
+
+.search-container select {
+  padding: 10px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: white;
+}
 
 
