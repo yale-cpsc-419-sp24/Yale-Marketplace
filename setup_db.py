@@ -25,7 +25,7 @@ def create_tables(db_name='marketplace.db'):
         asking_price TEXT,
         highest_bid INTEGER,
         image TEXT,
-        negotiable INTEGER,
+        condition INTEGER,
         sold INTEGER DEFAULT 0,
         image_path TEXT,
         category_id INTEGER,
