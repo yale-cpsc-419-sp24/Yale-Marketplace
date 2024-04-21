@@ -190,6 +190,21 @@ def submit_item():
         return render_template('add_item.html')
 
 
+@app.route('/edit_item/<int:item_id>', methods=['POST'])
+def edit_item(item_id):
+    if 'user_id' not in session:
+        return redirect(url_for('log_in'))
+
+    description = request.form['description']
+    asking_price = request.form['asking_price']
+
+    db = get_db()
+    db.execute('UPDATE item SET description = ?, asking_price = ? WHERE item_id = ?',
+               (description, asking_price, item_id))
+    db.commit()
+    
+    return jsonify({"message": "Item updated successfully"})
+
 @app.route('/submit_item_bid/<int:item_id>/', methods=['GET', 'POST'])
 def submit_item_bid(item_id):
     if 'user_id' not in session:
