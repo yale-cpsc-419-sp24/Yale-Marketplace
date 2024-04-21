@@ -99,13 +99,15 @@ body {
   flex-direction: column;
   text-decoration: none;
 }
-.item-image {
+
+.item-image.loaded {
   width: auto;
   height: 95%;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);    
+  
 }
 
 .item-card h3 {
