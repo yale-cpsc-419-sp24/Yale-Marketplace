@@ -20,7 +20,9 @@
     <p><strong>Condition:</strong> {{ item.Condition }}</p>
     <p><strong>Highest Bid:</strong> ${{ item.highest_bid }}</p>
     
-    </p><button id="edit-button">Edit</button>
+    {% if user_id == item.user_account_id %}
+      </p><button class="button" id="edit-button">Edit</button>
+    {% endif %}
   </div>
 <div class="image-container" id="image-container">
     <img class="item-image" src="{{ url_for('static', filename='uploads/' + item.image_path) }}" alt="Item Image" 
@@ -28,6 +30,7 @@
       onerror="this.style.display='none';"
 </div>
 
+</div>
 <div id="edit-form" style="display:none;">
   <p>Item Description: <input type="text" id="edit-description" value="{{ item.description }}"></p>
   <p>Asking Price: $<input type="text" id="edit-price" value="{{ item.asking_price }}"></p>
@@ -53,25 +56,17 @@
     </li>       {% endfor %}
   {% endif %}
 {% else %}
-  <a href="/submit_item_bid/{{ item.item_id }}/" class="button">Bid on Item</a>
+  <a href="/submit_item_bid/{{ item.item_id }}/" style="margin-top: 200px;" class="button">Bid on Item</a>
 {% endif %}
-</div>
 <script>
 $(document).ready(function() {
  $('#edit-button').click(function() {
     $('#display-info').hide();
     $('.item-image').hide();
+    $('#image-container').hide();
     $('#edit-form').show();
     
 });
-
-    console.log("here")
-    $('.item-image').on('load', function() {
-        console.log('ere')
-        $(this).show();
-        $('#image-container').show();
-    });
-
 
 $('#cancel-button').click(function() {
     $('#edit-form').hide();
