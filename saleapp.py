@@ -85,6 +85,8 @@ def listings():
     search_query = request.args.get('search', '')
     category_filter = request.args.get('category', None)
     condition_filter = request.args.get('condition', None)
+    min_price = request.args.get('min_price', '')
+    max_price = request.args.get('max_price', '')
     db = get_db()
 
     query = 'SELECT * FROM item WHERE 1=1'
@@ -99,11 +101,20 @@ def listings():
     if condition_filter:
         query += ' AND condition = ?'
         params.append(condition_filter)
+    if min_price:
+        query += ' AND asking_price >= ?'
+        params.append(min_price)
+    if max_price:
+        query += ' AND asking_price <= ?'
+        params.append(max_price)
 
     items = db.execute(query, params).fetchall()
     categories = db.execute('SELECT DISTINCT category_id FROM item').fetchall()
 
-    return render_template('index.html', items=items, search_query=search_query, categories=categories, current_category=category_filter, current_condition=condition_filter)
+    return render_template('index.html', items=items, search_query=search_query, categories=categories,
+                           current_category=category_filter, current_condition=condition_filter,
+                           min_price=min_price, max_price=max_price)
+
 
 @app.route('/my_account/')
 def my_account():
@@ -273,7 +284,7 @@ def decline_bid(bid_id):
     db.commit()
     return jsonify(success=True)
 
-@app.route('/llogin/', methods=['GET', 'POST'])
+@app.route('/login/', methods=['GET', 'POST'])
 def log_in():
     if request.method == 'POST':
         username = request.form['username']
