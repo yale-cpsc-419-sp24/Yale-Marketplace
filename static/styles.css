@@ -1,5 +1,5 @@
 body {
-      font-family: sans-serif;
+      font-family: eurostile;
 }
 .container {
   max-width: 800px;
@@ -37,7 +37,7 @@ body {
 .button {
   padding: 10px 20px;
   font-size: 16px;
-  background-color: #007bff;
+  background-color: #5b2678;/*#007bff*/
   color: #fff;
   border: none;
   border-radius: 5px;
