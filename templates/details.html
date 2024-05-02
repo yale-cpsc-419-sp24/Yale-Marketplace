@@ -41,7 +41,7 @@
   {% if bids_on_item %}
     <h3>Bids Psted:</h3>
       {% for bid in bids_on_item %}
-      <li id="bid-{{ bid.transaction_id }}"
+      <li class="transaction-item {% if bid.accepted_declined == 'accepted' %}transaction-accepted{% elif bid.accepted_declined == 'declined' %}transaction-declined{% endif %}" id="bid-{{ bid.transaction_id }}"
         class="{% if bid.status == 'accepted' %}accepted-bid{% elif bid.status == 'declined' %}declined-bid{% endif %}">
       Bid: Amount: ${{ bid.price }}
       {% if bid.accepted_declined == 'accepted' %}

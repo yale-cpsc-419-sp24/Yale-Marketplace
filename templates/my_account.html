@@ -34,7 +34,7 @@
       <ul class="nice-list">
         <!-- Updated section to display transaction details -->
         {% for transaction in bids_posted %}
-        <li class="transaction-item">
+        <li class="transaction-item {% if transaction.accepted_declined == 'accepted' %}transaction-accepted{% elif transaction.accepted_declined == 'declined' %}transaction-declined{% endif %}">
           <strong>Item Name:</strong> {{ transaction.name }}<br>
           <strong>Offer Price:</strong> ${{ transaction.offer_amount }}<br>
           <strong>Posted Price:</strong> ${{ transaction.asking_price }}<br>
