@@ -208,8 +208,10 @@ body {
 
 .content {
   display: flex;
-  width: 100%;
   align-items: flex-start;
+  max-width: 1800px;
+  margin: 0 auto;
+
 }
 
 .filter-sidebar {
@@ -229,22 +231,31 @@ body {
 
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(370px, 1fr));
   gap: 20px;
-}
+  }
 
 .item-card {
   border: 1px solid #ccc;
   padding: 10px;
   color: black;
-  display: flex;
-  flex-direction: column;
   text-decoration: none;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1), 0 6px 20px rgba(0,0,0,0.1);
 }
 
+.item-card h3 {
+  font-size: 28px;
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+.item-card p {
+  font-size: 20px;
+  line-height: 1.5;
+}
 .item-image {
   width: 100%;
-  height: 200px;
+  height: 300px;
   object-fit: cover;
 }
 
