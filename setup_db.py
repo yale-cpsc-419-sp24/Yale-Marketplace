@@ -22,7 +22,7 @@ def create_tables(db_name='marketplace.db'):
         user_account_id TEXT,
         name TEXT NOT NULL,
         description TEXT NOT NULL,
-        asking_price TEXT,
+        asking_price DOUBLE,
         highest_bid INTEGER,
         image TEXT,
         condition INTEGER,
