@@ -284,7 +284,7 @@ def decline_bid(bid_id):
     db.commit()
     return jsonify(success=True)
 
-@app.route('/login/', methods=['GET', 'POST'])
+@app.route('/llogin/', methods=['GET', 'POST'])
 def log_in():
     if request.method == 'POST':
         username = request.form['username']
