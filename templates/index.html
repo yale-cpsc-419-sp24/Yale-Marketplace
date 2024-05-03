@@ -6,7 +6,7 @@
     <title>Items Grid</title>
     <link rel="stylesheet" href="/static/styles.css">
 </head>
-<body>
+<body >
     <div class="menu-bar">
         <a href="/my_account" id="my-account-link">
           <img src="/static/account-icon.png" alt="My Account">
@@ -52,6 +52,8 @@
                         <img class="item-image" src="{{ url_for('static', filename='uploads/' + item.image_path) }}" alt="Item Image" onerror="this.style.display='none';">
                     </div>
                     <p>Price: ${{ item.asking_price }}</p>
+                    <p><strong>Highest Bid:</strong> {% if item.highest_bid %}${{ item.highest_bid }}{% else %}No bids{% endif %}</p>
+
                 </a>
                 {% endfor %}
             </div>

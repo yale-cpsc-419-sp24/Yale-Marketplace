@@ -3,7 +3,7 @@ body {
 }
 .container {
   max-width: 800px;
-  margin: 50px auto;
+  margin: 70px auto;
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -280,8 +280,8 @@ body {
 
 #my-account-link {
     display: inline-block;
-    width: 32px;
-    height: 32px;
+    width: 42px;
+    height: 42px;
     background-color: transparent;
     border: none;
 }
@@ -293,8 +293,8 @@ body {
 }
 #home-link {
     display: inline-block;
-    width: 32px;
-    height: 32px;
+    width: 42px;
+    height: 42px;
     background-color: transparent;
     border: none;
 }
@@ -304,4 +304,18 @@ body {
     height: auto;
     display: block;
 }
+
+.menu-bar {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    display: flex;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    z-index: 100;
+}
+
+
 
