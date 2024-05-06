@@ -32,3 +32,15 @@ This project aims to develop a dedicated web/app platform for the Yale community
 - Enhanced security measures for user data protection
 - Final UI/UX polish for optimal user experience
 - Preparation for seamless demo presentation, noting any potential issues
+
+
+### Instructions:
+please run the server 'runserver.py' to run the application: python3 runserver.py 3000
+
+Toggle CAS authentication: to turn off CAS please alter the route: @app.route('/llogin/', methods=['GET', 'POST']) on line 287 (will be the first route labeled either login or llogin) to say login instead of llogin. When this line shows llogin CAS is default and when this line says login CAS is not default.
+
+Whith any issues, feel free to reach out to me at isaac.mendelsohn@yale.edu.
+
+THANK YOU SO MUCH FOR A GREAT SEMESTER!!!
+
+
