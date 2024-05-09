@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Items Grid</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="menu-bar">
+    <a href="/my_account/">My Account</a>
+  </div>
+  <h2>Items for sale</h2>
+  <div class="search-container">
+      <form action="/index/" method="get">
+          <input type="text" name="search" placeholder="Search items by name..." value="{{ search_query }}">
+          <select name="category">
+              <option value="">All Categories</option>
+              {% for category in categories %}
+                <option value="{{ category.category_id }}" {% if category.category_id == current_category %}selected{% endif %}>{{ category.category_id }}</option>
+              {% endfor %}
+          </select>
+          <select name="condition">
+              <option value="">Any Condition</option>
+              <option value="New" {% if current_condition == "New" %}selected{% endif %}>New</option>
+              <option value="Used" {% if current_condition == "Used" %}selected{% endif %}>Used</option>
+          </select>
+          <label>Price Range:</label>
+          <input type="number" name="min_price" placeholder="Min $" value="{{ min_price }}" style="width: 70px;"> to
+          <input type="number" name="max_price" placeholder="Max $" value="{{ max_price }}" style="width: 70px;">
+          <button type="submit">Search</button>
+      </form>
+  </div>
+  
+  <div class="grid-container">
+    {% for item in items %}
+    <a href="/item/{{ item.item_id }}" class="item-card">
+      <h3>{{ item.name }}</h3>
+      <p>Description: {{ item.description[:100] }}{% if item.description|length > 100 %}...{% endif %}</p>
+     <div class="image-container">
+       <img class="item-image" src="{{ url_for('static', filename='uploads/' + item.image_path) }}" alt="Item Image" onerror="this.style.display='none';">
+     </div>
+      <p>Price: ${{ item.asking_price }} </p>
+      <p>Condition: {{ item.Condition }} </p>
+      <p>Highest Bid: ${{ item.highest_bid }} </p>
+    </a>
+    {% endfor %}
+  </div>
+</body>
+</html>
+

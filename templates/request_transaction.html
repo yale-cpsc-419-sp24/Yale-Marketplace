@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bid for Item</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="menu-bar">
+    <a href="/index/" id="home-link">
+          <img src="/static/home-icon.png" alt="Home">
+    </a>  
+    <a href="/my_account" id="my-account-link">
+          <img src="/static/account-icon.png" alt="My Account">
+    </a>  
+
+  </div>
+
+  <div class="add-item-container">
+  <h1>Add New Item</h1>
+  <form action="/submit_item_bid/{{ item_id }}/" method="post" enctype="multipart/form-data">
+    
+    <p>Price: ${{ item.asking_price }} </p>
+    <p>Condition: {{ item.Condition }} </p>
+    <p>Highest Bid: ${{ item.highest_bid }} </p>
+
+    <label for="offer_price">What you are willing to pay:</label><br>
+    <input type="number" id="offer_price" name="offer_price" step="0.01" required><br><br>
+
+    <label for="comments">Comments:</label><br>
+    <textarea id="comments" name="comments" ></textarea><br><br>
+
+    <input type="submit" value="Submit">
+  </form>
+  </div>
+</body>
+</html>
+

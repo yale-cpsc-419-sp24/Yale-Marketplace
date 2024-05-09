@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+  
+</body>
+<div class="menu-bar">
+    <a href="/index/" id="home-link">
+          <img src="/static/home-icon.png" alt="Home">
+    </a>
+    <a href="/my_account" id="my-account-link">
+          <img src="/static/account-icon.png" alt="My Account">
+    </a>
+</div>
+<div class="add-item-container" >
+  <div id="display-info">
+    <h2>{{ item.name }}</h2>
+    
+    <p><strong>Item Description:</strong> {{ item.description }}</p>
+    <p><strong>Asking Price:</strong> ${{ item.asking_price }}</p>
+    <p><strong>Condition:</strong> {{ item.Condition }}</p>
+    <p><strong>Highest Bid:</strong> {% if item.highest_bid %}${{ item.highest_bid }}{% else %}No bids{% endif %}</p>
+    
+    {% if user_id == item.user_account_id %}
+      </p><button class="button" id="edit-button">Edit</button>
+    {% endif %}
+  </div>
+<div class="image-container" id="image-container">
+    <img class="item-image" src="{{ url_for('static', filename='uploads/' + item.image_path) }}" alt="Item Image" 
+      onload="this.classList.add('loaded');" 
+      onerror="this.style.display='none';"
+</div>
+
+</div>
+<div id="edit-form" style="display:none;">
+  <p>Item Description: <input type="text" id="edit-description" value="{{ item.description }}"></p>
+  <p>Asking Price: $<input type="text" id="edit-price" value="{{ item.asking_price }}"></p>
+  <button id="save-button">Save Changes</button>
+  <button id="cancel-button">Cancel</button>
+</div>
+{% if user_id == item.user_account_id %}
+  {% if bids_on_item %}
+    <h3>Bids Psted:</h3>
+      {% for bid in bids_on_item %}
+      <li class="transaction-item {% if bid.accepted_declined == 'accepted' %}transaction-accepted{% elif bid.accepted_declined == 'declined' %}transaction-declined{% endif %}" id="bid-{{ bid.transaction_id }}"
+        class="{% if bid.status == 'accepted' %}accepted-bid{% elif bid.status == 'declined' %}declined-bid{% endif %}">
+      Bid: Amount: ${{ bid.price }}
+      {% if bid.accepted_declined == 'accepted' %}
+        <strong>Accepted</strong>
+        Contact Buyer: Email is: {{ bid.email_address }} Phone number is: {{ bid.phone_number}} 
+      {% elif bid.accepted_declined == 'declined' %}
+        <strong>Declined</strong>
+      {% else %}
+        <button data-bid-id="{{ bid.transaction_id }}" class="accept-btn">Accept</button>
+        <button data-bid-id="{{ bid.transaction_id }}" class="decline-btn">Decline</button>
+      {% endif %}
+    </li>       {% endfor %}
+  {% endif %}
+{% else %}
+  <a href="/submit_item_bid/{{ item.item_id }}/" style="margin-top: 200px;" class="button">Bid on Item</a>
+{% endif %}
+<script>
+$(document).ready(function() {
+ $('#edit-button').click(function() {
+    $('#display-info').hide();
+    $('.item-image').hide();
+    $('#image-container').hide();
+    $('#edit-form').show();
+    
+});
+
+$('#cancel-button').click(function() {
+    $('#edit-form').hide();
+    $('#display-info').show();
+});
+
+$('#save-button').click(function() {
+    var description = $('#edit-description').val();
+    var price = $('#edit-price').val();
+    var itemID = {{ item.item_id }}; // Assuming you have the item ID available in your template
+
+    $.ajax({
+        url: '/edit_item/' + itemID,
+        method: 'POST',
+        data: {
+            description: description,
+            asking_price: price
+        },
+        success: function(response) {
+            $('#item-description').text(description);
+            $('#item-price').text(price);
+            $('#edit-form').hide();
+            $('#display-info').show();
+            location.reload();
+        },
+        error: function() {
+            alert('Error updating item. Please try again.');
+        }
+    });
+}); 
+
+$('.accept-btn').click(function() {
+    var bidId = $(this).data('bid-id');
+    $.ajax({
+        url: '/accept_bid/' + bidId,
+        method: 'POST',
+        success: function() {
+            var bidItem = $('#bid-' + bidId);
+            bidItem.html(bidItem.text() + ' <strong style="color: green;">Accepted</strong>');
+            location.reload();
+        }
+    });
+});
+
+$('.decline-btn').click(function() {
+    var bidId = $(this).data('bid-id');
+    $.ajax({
+        url: '/decline_bid/' + bidId,
+        method: 'POST',
+        success: function() {
+            var bidItem = $('#bid-' + bidId);
+            bidItem.html(bidItem.text() + ' <strong style="color: red;">Declined</strong>');
+        }
+    });
+});
+
+});
+</script>
+
+</body>
+</html>

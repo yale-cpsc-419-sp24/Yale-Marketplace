@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<div class="menu-bar">
+     <a href="/index/" id="home-link">
+          <img src="/static/home-icon.png" alt="Home">
+    </a>
+</div>
+
+<body>
+  <div class="container">
+    <h2>Welcome, {{ username }}</h2>
+
+    <div class="section">
+      <div class="section-title">My Posts</div>
+      <ul class="nice-list">
+      {% for item in items_posted %}
+      <a href="/item/{{ item.item_id }}" class="item-name-card">
+        <h3>{{ item.name }}</h3>
+      </a>
+      {% endfor %}
+
+      </ul>
+      <form action="/post/" method="GET">
+        <button class="button" type="submit">Add Item</button>
+      </form>
+    </div>
+
+    <div class="section">
+      <div class="section-title">My Transactions Requests</div>
+      <ul class="nice-list">
+        <!-- Updated section to display transaction details -->
+        {% for transaction in bids_posted %}
+        <li class="transaction-item {% if transaction.accepted_declined == 'accepted' %}transaction-accepted{% elif transaction.accepted_declined == 'declined' %}transaction-declined{% endif %}">
+          <strong>Item Name:</strong> {{ transaction.name }}<br>
+          <strong>Offer Price:</strong> ${{ transaction.offer_amount }}<br>
+          <strong>Posted Price:</strong> ${{ transaction.asking_price }}<br>
+          {% if transaction.accepted_declined %}
+            <strong>Accepted?:</strong> {{ transaction.accepted_declined }}<br>
+          {% else %}
+            <strong>Accepted?: </strong>No Response<br>
+          {% endif %}
+        </li>
+        {% else %}
+        <li>No transactions found.</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <form action="/logout/" method="get">
+      <button type="submit">Sign Out</button>
+    </form>
+
+    </div>
+</body>
+</html>

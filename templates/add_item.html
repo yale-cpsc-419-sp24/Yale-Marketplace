@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add New Item</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="menu-bar">
+    
+    <a href="/index/" id="home-link">
+          <img src="/static/home-icon.png" alt="Home">
+    </a>
+   <a href="/my_account" id="my-account-link">
+          <img src="/static/account-icon.png" alt="My Account">
+    </a>  
+
+  </div>
+
+  <div class="add-item-container">
+  <h1>Add New Item</h1>
+  <form action="/submit_item/" method="post" enctype="multipart/form-data">
+    <label for="name">Name:</label><br>
+    <input type="text" id="name" name="name" required><br><br>
+
+    <label for="description">Description:</label><br>
+    <textarea id="description" name="description" ></textarea><br><br>
+
+    <label for="asking_price">Asking Price:</label><br>
+    <input type="number" id="asking_price" name="asking_price" step="0.01" required><br><br>
+
+    <label for="image">Image:</label><br>
+    <input type="file" id="image" name="image" accept="image/*" ><br><br>
+
+    <label for="condition">Condition:</label><br>
+    <input type="radio" id="condition_new" name="condition" value="New" required>
+    <label for="condition_new">New</label>
+    <input type="radio" id="condition_used" name="condition" value="Used" required>
+    <label for="condition_used">Used</label><br><br>
+
+    <label for="category">Category:</label><br>
+    <select id="category" name="category" multiple required>
+      <option value="Electronics">Electronics</option>
+      <option value="Clothing">Clothing</option>
+      <option value="Furniture">Furniture</option>
+      <option value="Other">Other</option>
+    </select><br><br>
+
+    <input type="submit" value="Submit">
+  </form>
+  </div>
+</body>
+</html>
+
